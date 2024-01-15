@@ -78,6 +78,7 @@ use rocket::serde::json::Value;
 use rocket::serde::{Serialize, Deserialize};
 use rocket::{launch, routes};
 use rocket::get;
+use std::collections::HashMap;
 
 #[derive(Serialize, Debug)]
 #[serde(crate = "rocket::serde")]
@@ -100,6 +101,8 @@ async fn get_bins() -> Option<Value> {
 
         let list_of_bins = document.select(&bin_query).map(|x| x.inner_html());
 
+        // println!("{:?}", list_of_bins);
+
         fn get_bin_colour(colour_string: &str) -> String {
             match colour_string {
                 _ if colour_string.contains("Blue") => "Blue".to_string(),
@@ -110,14 +113,16 @@ async fn get_bins() -> Option<Value> {
             }
         }
 
-        let bins_due_tomorrow: Vec<BinData> = list_of_bins
-            .map(|bin_string| BinData {
-                colour: get_bin_colour(&bin_string),
-                due_tomorrow: bin_string.contains("Tomorrow"),
+        let collection_status: HashMap<String, bool> = list_of_bins
+            .into_iter()
+            .map(|bin_string| {
+                (get_bin_colour(&bin_string), bin_string.contains("Tomorrow"))
             })
             .collect();
 
-        Some(serde_json::json!(bins_due_tomorrow))
+        println!("{:?}", collection_status);
+
+        Some(serde_json::json!(collection_status))
     } else {
         Some(serde_json::json!("Error"))
     }
