@@ -1,12 +1,22 @@
 extern crate rocket;
 
-use rocket::serde::json::Json;
 use rocket::serde::json::Value;
-use rocket::serde::{Serialize, Deserialize};
 use rocket::{launch, routes};
 use rocket::config::{Config};
 use rocket::get;
 use std::collections::HashMap;
+use std::default;
+
+
+fn get_bin_colour(colour_string: &str) -> String {
+    match colour_string {
+        _ if colour_string.contains("Blue") => "Blue".to_string(),
+        _ if colour_string.contains("Brown") => "Brown".to_string(),
+        _ if colour_string.contains("Green") => "Green".to_string(),
+        _ if colour_string.contains("Purple") => "Purple".to_string(),
+        _ => "Unknown".to_string(),
+    }
+}
 
 
 #[get("/bins")]
@@ -23,15 +33,6 @@ async fn get_bins() -> Option<Value> {
         let list_of_bins = document.select(&bin_query).map(|x| x.inner_html());
 
 
-        fn get_bin_colour(colour_string: &str) -> String {
-            match colour_string {
-                _ if colour_string.contains("Blue") => "Blue".to_string(),
-                _ if colour_string.contains("Brown") => "Brown".to_string(),
-                _ if colour_string.contains("Green") => "Green".to_string(),
-                _ if colour_string.contains("Purple") => "Purple".to_string(),
-                _ => "Unknown".to_string(),
-            }
-        }
 
         let collection_status: HashMap<String, bool> = list_of_bins
             .into_iter()
@@ -48,5 +49,9 @@ async fn get_bins() -> Option<Value> {
 
 #[launch]
 fn rocket() -> _ {
-    rocket::build().mount("/", routes![get_bins])
+    // let config: Config = Config::default();
+
+    rocket::build() .mount("/", routes![get_bins])
+    // rocket::custom(config)
+    //     .mount("/", routes![get_bins])
 }
