@@ -22,7 +22,7 @@ fn get_bin_colour(colour_string: &str) -> String {
 #[get("/bins")]
 async fn get_bins() -> Option<Value> {
     if let Ok(response) = reqwest::get(
-        "https://www.glasgow.gov.uk/forms/refuseandrecyclingcalendar/CollectionsCalendar.aspx?UPRN=906700382583"
+        "https://onlineservices.glasgow.gov.uk/forms/RefuseAndRecyclingWebApplication/CollectionsCalendar.aspx?UPRN=906700382583"
     ).await.and_then(|res| Ok(res.text()))
     {
         
